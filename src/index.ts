@@ -63,7 +63,7 @@ function isPlainObject(input: unknown): input is object {
   return input !== null && typeof input === 'object' && !Array.isArray(input)
 }
 
-export function deeplyMerge(a: object, b: object) {
+function deeplyMerge(a: object, b: object) {
   const c = {}
   const uniqueKeys = new Set([Object.keys(a), Object.keys(b)].flat())
 
@@ -80,6 +80,14 @@ export function deeplyMerge(a: object, b: object) {
   })
 
   return c
+}
+
+type DeeplyReadonly<T> = {
+  readonly [K in keyof T]:  T[K] extends SimpleType ? T[K] : DeeplyReadonly<T[K]>
+}
+
+export function translations<T extends Readonly<object>>(object: T): DeeplyReadonly<T> {
+  return object
 }
 
 export function __library_name__<D extends string, T extends object>(dictionary: TranslationsDictionary<T, D>, fallbackLocale: D) {
